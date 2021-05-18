@@ -34,7 +34,7 @@ class IndexCache {
 
     function __construct() {
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
-        $this->noimg = sprintf('%s/assets/images/noimg.jpg');
+        $this->noimg = sprintf('%s/assets/images/noimg.jpg', $this->path);
         $this->server = (object) $_SERVER;
         $this->host = sprintf('%s://%s', $this->server->HTTP_HOST, !$this->is_https() ? 'http' : 'https');
 
