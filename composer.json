@@ -1,1 +1,24 @@
-
+{
+    "name": "darius00klokj/indexcache",
+    "type": "library",
+    "description": "Caching pre Wordpress loading",
+    "keywords": ["wordpress","caching"],
+    "homepage": "https://github.com/darius00klokj/indexcache",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Darius Karremans",
+            "email": "darius00klokj@gmail.com",
+            "homepage": "#",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "IndexCache": "src"
+        }
+    }
+}
