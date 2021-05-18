@@ -38,8 +38,15 @@ class IndexCache {
      * @var type
      */
     public $indexFile = '';
+    
+    /**
+     * Any path in this array will be omitted from cache
+     * 
+     * @var type
+     */
+    public $ignorePaths = [];
 
-    function __construct($indexFile = 'index.php') {
+    function __construct($indexFile = 'index.php', $ignorePaths = []) {
 
         if (!is_file($indexFile)) {
             throw new Exception('No index file found at ' . $indexFile);
@@ -50,6 +57,7 @@ class IndexCache {
         $this->server = (object) $_SERVER;
         $this->host = sprintf('%s://%s', $this->server->HTTP_HOST, !$this->is_https() ? 'http' : 'https');
         $this->indexFile = $indexFile;
+        $this->ignorePaths = $ignorePaths;
         
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
@@ -285,7 +293,7 @@ class IndexCache {
     }
 
     function do_cache($path) {
-        $remove_from_cache = ['/contact-us/', '/user/', '/creators/', '.xml', '/12-days-of-chillhop/'];
+        $remove_from_cache = $this->ignorePaths;
 
         foreach ($remove_from_cache as $uri) {
             if (strpos($path, $uri) !== false) {
@@ -296,6 +304,7 @@ class IndexCache {
         $getpost = array_merge($_GET, $_POST);
         unset($getpost['_pjax']);
         unset($getpost['_']);
+        
         if (count($getpost) > 0) {
             return false;
         }
