@@ -31,15 +31,27 @@ class IndexCache {
      * @var type
      */
     public $host = '';
+    
+    /**
+     * File that will be loaded to generate the cache
+     * 
+     * @var type
+     */
+    public $indexFile = '';
 
-    function __construct() {
+    function __construct($indexFile = 'index.php') {
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
         $this->noimg = sprintf('%s/assets/images/noimg.jpg', $this->path);
         $this->server = (object) $_SERVER;
         $this->host = sprintf('%s://%s', $this->server->HTTP_HOST, !$this->is_https() ? 'http' : 'https');
+        $this->indexFile = $indexFile;
 
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
+        }
+
+        if (!is_file($indexFile)) {
+            throw new Exception('No index file found at ' . $indexFile);
         }
     }
 
@@ -68,7 +80,7 @@ class IndexCache {
      */
     public function try_cache() {
 
-        $url = $this->read_url();
+        $url = $this->get_url();
 
         if (!IS_DEV && !$this->is_https()) {
             header("Status: 301 Moved Permanently");
@@ -110,7 +122,6 @@ class IndexCache {
         }
         echo $content;
         die();
-
     }
 
     /**
