@@ -40,19 +40,23 @@ class IndexCache {
     public $indexFile = '';
 
     function __construct($indexFile = 'index.php') {
+
+        if (!is_file($indexFile)) {
+            throw new Exception('No index file found at ' . $indexFile);
+        }
+        
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
         $this->noimg = sprintf('%s/assets/images/noimg.jpg', $this->path);
         $this->server = (object) $_SERVER;
         $this->host = sprintf('%s://%s', $this->server->HTTP_HOST, !$this->is_https() ? 'http' : 'https');
         $this->indexFile = $indexFile;
-
+        
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
         }
-
-        if (!is_file($indexFile)) {
-            throw new Exception('No index file found at ' . $indexFile);
-        }
+        
+        $this->set_current_country();
+        $this->get_cache_root();
     }
 
     /**
