@@ -9,7 +9,6 @@
         {
             "name": "Darius Karremans",
             "email": "darius00klokj@gmail.com",
-            "homepage": "#",
             "role": "Developer"
         }
     ],
@@ -18,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "IndexCache": "src"
+            "IndexCache\\": "src"
         }
     }
 }
