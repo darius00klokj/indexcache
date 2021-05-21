@@ -61,7 +61,7 @@ class IndexCache {
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
         }
-
+        
         $url = str_replace($this->server->DOCUMENT_ROOT, $this->host, $this->path);
         $this->noimg = sprintf('%s/assets/images/noimg.jpg', $url);
 
@@ -230,7 +230,7 @@ class IndexCache {
             mkdir($base);
         }
 
-        $fp = fopen('log', 'a'); //opens file in append mode  
+        $fp = fopen($file, 'a'); //opens file in append mode  
         fwrite($fp, PHP_EOL . $line);
         fclose($fp);
     }
