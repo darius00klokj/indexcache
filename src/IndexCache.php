@@ -31,14 +31,14 @@ class IndexCache {
      * @var type
      */
     public $host = '';
-    
+
     /**
      * File that will be loaded to generate the cache
      * 
      * @var type
      */
     public $indexFile = '';
-    
+
     /**
      * Any path in this array will be omitted from cache
      * 
@@ -51,18 +51,20 @@ class IndexCache {
         if (!is_file($indexFile)) {
             throw new Exception('No index file found at ' . $indexFile);
         }
-        
+
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
-        $this->noimg = sprintf('%s/assets/images/noimg.jpg', $this->path);
         $this->server = (object) $_SERVER;
-        $this->host = sprintf('%s://%s', $this->server->HTTP_HOST, !$this->is_https() ? 'http' : 'https');
+        $this->host = sprintf('%s://%s', !$this->is_https() ? 'http' : 'https', $this->server->HTTP_HOST);
         $this->indexFile = $indexFile;
         $this->ignorePaths = $ignorePaths;
-        
+
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
         }
-        
+
+        $url = str_replace($this->server->DOCUMENT_ROOT, $this->host, $this->path);
+        $this->noimg = sprintf('%s/assets/images/noimg.jpg', $url);
+
         $this->set_current_country();
         $this->get_cache_root();
     }
@@ -107,11 +109,7 @@ class IndexCache {
             /**
              * This is should be a 404
              */
-            if (defined('IS_DEV')) {
-                header("Location: https://chillhop.com" . $path);
-            } else {
-                header("Location: " . $this->noimg);
-            }
+            header("Location: " . $this->noimg);
             die();
         }
 
@@ -304,7 +302,7 @@ class IndexCache {
         $getpost = array_merge($_GET, $_POST);
         unset($getpost['_pjax']);
         unset($getpost['_']);
-        
+
         if (count($getpost) > 0) {
             return false;
         }
