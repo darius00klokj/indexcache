@@ -333,7 +333,7 @@ class IndexCache {
      *
      * @return string IP address or PWD
      */
-    public static function get_user_ip() {
+    public function get_user_ip() {
         $ip = false;
 
         if (!empty($this->server->HTTP_CLIENT_IP)) {

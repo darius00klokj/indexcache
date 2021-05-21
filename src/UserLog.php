@@ -32,7 +32,7 @@ class UserLog {
      * @param IndexCache $cache
      */
     function log_access() {
-        $line = sprintf('%s%s:%s', PHP_EOL, time(), $this->cache->get_user_ip());
+        $line = sprintf('%s:%s', time(), $this->cache->get_user_ip());
         $this->cache->append(static::LOG_FILE, $line);
     }
     
@@ -54,6 +54,10 @@ class UserLog {
         $times = 0;
         $exploded = explode(PHP_EOL, $lines);
         foreach($exploded as $line){
+            if(!$line || strpos($line, ':') === false){
+                continue;
+            }
+            
             $ps = explode(':', $line);
             $time = floatval($ps[0]);
             $ipq = $ps[1];
