@@ -218,6 +218,24 @@ class IndexCache {
     }
 
     /**
+     * Add a cache file
+     * 
+     * @param type $name
+     * @return type
+     */
+    public function append($name, $line) {
+        $file = $this->get_cache_root() . $name;
+        $base = dirname($file);
+        if (!is_dir($base)) {
+            mkdir($base);
+        }
+
+        $fp = fopen('log', 'a'); //opens file in append mode  
+        fwrite($fp, PHP_EOL . $line);
+        fclose($fp);
+    }
+
+    /**
      * Gets a cache file
      * 
      * @param type $name
