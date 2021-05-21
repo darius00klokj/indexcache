@@ -310,4 +310,27 @@ class IndexCache {
         return !$this->check_if_media($path);
     }
 
+    /**
+     * Returns the users IP, or PWD if user's IP can't be determined
+     *
+     * @return string IP address or PWD
+     */
+    public static function get_user_ip() {
+        $ip = false;
+
+        if (!empty($this->server->HTTP_CLIENT_IP)) {
+            //ip from share internet
+            $ip = $this->server->HTTP_CLIENT_IP;
+        } elseif (!empty($this->server->HTTP_X_FORWARDED_FOR)) {
+            //ip pass from proxy
+            $ip = $this->server->HTTP_X_FORWARDED_FOR;
+        } elseif (!empty($this->server->REMOTE_ADDR)) {
+            $ip = $this->server->REMOTE_ADDR;
+        } elseif (!empty($this->server->PWD)) {
+            $ip = $this->server->PWD;
+        }
+
+        return $ip;
+    }
+
 }
