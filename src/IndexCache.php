@@ -61,7 +61,7 @@ class IndexCache {
         if (!defined('IS_DEV')) {
             define('IS_DEV', strpos($this->host, '.io') !== false);
         }
-        
+
         $url = str_replace($this->server->DOCUMENT_ROOT, $this->host, $this->path);
         $this->noimg = sprintf('%s/assets/images/noimg.jpg', $url);
 
@@ -118,7 +118,7 @@ class IndexCache {
             return;
         }
 
-        $filename = md5($url) . '-' . ($this->is_china() ? 'CN' : 'WORLD');
+        $filename = md5($url) . '-' . ($this->country_prop());
         $data = $this->get($filename, 3600 * 24);
         if ($data) {
             echo $data;
@@ -133,6 +133,24 @@ class IndexCache {
         echo $content;
         die();
     }
+    
+    /**
+     * Caches depending on NL, CH or world.
+     * @return string
+     */
+    public function country_prop(){
+        
+        if($this->is_china()){
+            return USER_COUNTRY;
+        }
+        
+        if($this->is_NL()){
+            return USER_COUNTRY;
+        }
+        
+        return 'WORLD';
+        
+    }
 
     /**
      * If we are in China
@@ -141,6 +159,15 @@ class IndexCache {
      */
     public function is_china() {
         return USER_COUNTRY === 'CN';
+    }
+    
+    /**
+     * If we are in China
+     * 
+     * @return type
+     */
+    public function is_NL() {
+        return USER_COUNTRY === 'NL';
     }
 
     /**
