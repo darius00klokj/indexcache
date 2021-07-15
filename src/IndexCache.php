@@ -93,6 +93,8 @@ class IndexCache {
      * in IS_DEV mode to HTTPS
      */
     public function try_cache() {
+        global $skip_cache;
+        $skip_cache = false;
 
         $url = $this->get_url();
 
@@ -336,6 +338,12 @@ class IndexCache {
     }
 
     function do_cache($path) {
+        global $skip_cache;
+        
+        if($skip_cache){
+            return false;
+        }
+        
         $remove_from_cache = $this->ignorePaths;
 
         foreach ($remove_from_cache as $uri) {
@@ -351,7 +359,7 @@ class IndexCache {
         if (count($getpost) > 0) {
             return false;
         }
-
+        
         return !$this->check_if_media($path);
     }
 
