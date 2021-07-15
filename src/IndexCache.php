@@ -130,7 +130,10 @@ class IndexCache {
         include 'index.php';
         $content = ob_get_clean();
         if (!$skip_cache && strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
-            $this->set($filename, $content);
+            $saved = $this->set($filename, $content);
+            if(!$saved){
+                throw new Exception('Unable to save cache file.');
+            }
         }
         echo $content;
         die();
