@@ -1,6 +1,7 @@
 <?php
 
 namespace IndexCache;
+use Exception;
 
 class IndexCache {
 
@@ -132,7 +133,7 @@ class IndexCache {
         if (!$skip_cache && strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
             $saved = $this->set($filename, $content);
             if(!$saved){
-                throw new Exception('Unable to save cache file.');
+                throw new \Exception('Unable to save cache file.');
             }
         }
         echo $content;
@@ -247,7 +248,7 @@ class IndexCache {
         }
         
         if(!is_dir($base)){
-            throw new Exception('Unable to create cache folder.');
+            throw new \Exception('Unable to create cache folder.');
         }
 
         return $this->write($this->compress($content), $file);
