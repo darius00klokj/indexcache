@@ -129,7 +129,7 @@ class IndexCache {
         ob_start();
         include 'index.php';
         $content = ob_get_clean();
-        if (strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
+        if (!$skip_cache && strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
             $this->set($filename, $content);
         }
         echo $content;
