@@ -1,6 +1,7 @@
 <?php
 
 namespace IndexCache;
+
 use Exception;
 
 class IndexCache {
@@ -132,30 +133,29 @@ class IndexCache {
         $content = ob_get_clean();
         if (!$skip_cache && strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
             $saved = $this->set($filename, $content);
-            if(!$saved){
-                throw new \Exception('Unable to save cache file.');
+            if (!$saved) {
+                throw new \Exception('Unable to save cache file ' . $filename);
             }
         }
         echo $content;
         die();
     }
-    
+
     /**
      * Caches depending on NL, CH or world.
      * @return string
      */
-    public function country_prop(){
-        
-        if($this->is_china()){
+    public function country_prop() {
+
+        if ($this->is_china()) {
             return USER_COUNTRY;
         }
-        
-        if($this->is_NL()){
+
+        if ($this->is_NL()) {
             return USER_COUNTRY;
         }
-        
+
         return 'WORLD';
-        
     }
 
     /**
@@ -166,7 +166,7 @@ class IndexCache {
     public function is_china() {
         return USER_COUNTRY === 'CN';
     }
-    
+
     /**
      * If we are in China
      * 
@@ -246,9 +246,9 @@ class IndexCache {
         if (!is_dir($base)) {
             mkdir($base);
         }
-        
-        if(!is_dir($base)){
-            throw new \Exception('Unable to create cache folder.');
+
+        if (!is_dir($base)) {
+            throw new \Exception('Unable to create cache folder ' . $base);
         }
 
         return $this->write($this->compress($content), $file);
@@ -347,11 +347,11 @@ class IndexCache {
 
     function do_cache($path) {
         global $skip_cache;
-        
-        if($skip_cache){
+
+        if ($skip_cache) {
             return false;
         }
-        
+
         $remove_from_cache = $this->ignorePaths;
 
         foreach ($remove_from_cache as $uri) {
@@ -367,7 +367,7 @@ class IndexCache {
         if (count($getpost) > 0) {
             return false;
         }
-        
+
         return !$this->check_if_media($path);
     }
 
