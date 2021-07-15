@@ -242,6 +242,10 @@ class IndexCache {
         if (!is_dir($base)) {
             mkdir($base);
         }
+        
+        if(!is_dir($base)){
+            throw new Exception('Unable to create cache folder.');
+        }
 
         return $this->write($this->compress($content), $file);
     }
