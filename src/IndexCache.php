@@ -50,10 +50,6 @@ class IndexCache {
 
     function __construct($indexFile = 'index.php', $ignorePaths = []) {
 
-        if (!is_file($indexFile)) {
-            throw new Exception('No index file found at ' . $indexFile);
-        }
-
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
         $this->server = (object) $_SERVER;
         $this->host = sprintf('%s://%s', !$this->is_https() ? 'http' : 'https', $this->server->HTTP_HOST);
@@ -98,6 +94,10 @@ class IndexCache {
         global $skip_cache;
         $skip_cache = false;
 
+        if (!is_file($this->indexFile)) {
+            throw new Exception('No index file found at ' . $this->indexFile);
+        }
+
         $url = $this->get_url();
 
         if (!IS_DEV && !$this->is_https()) {
@@ -118,7 +118,7 @@ class IndexCache {
         }
 
         if (!$this->do_cache($path)) {
-            include 'index.php';
+            include $this->indexFile;
             return;
         }
 
@@ -129,7 +129,7 @@ class IndexCache {
             die();
         }
         ob_start();
-        include 'index.php';
+        include $this->indexFile;
         $content = ob_get_clean();
         if (!$skip_cache && strpos($content, '<html') !== false && strpos($content, 'error404') === false) {
             $saved = $this->set($filename, $content);
