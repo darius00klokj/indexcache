@@ -56,10 +56,6 @@ class IndexCache {
         $this->indexFile = $indexFile;
         $this->ignorePaths = $ignorePaths;
 
-        if (!defined('IS_DEV')) {
-            define('IS_DEV', strpos($this->host, '.io') !== false);
-        }
-
         $url = str_replace($this->server->DOCUMENT_ROOT, $this->host, $this->path);
         $this->noimg = sprintf('%s/assets/images/noimg.jpg', $url);
 
