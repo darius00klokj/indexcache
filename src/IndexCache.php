@@ -4,40 +4,41 @@ namespace IndexCache;
 
 use Exception;
 
-class IndexCache {
+class IndexCache
+{
 
     /**
      * When the request is an image, it means that there is a 404. 
      * We want to display a dummy image
      * 
-     * @var type
+     * @var string
      */
     public $noimg = '';
 
     /**
      * Current root of this package
      * 
-     * @var type
+     * @var string
      */
     public $path = '';
 
     /**
      * All global server variables
-     * @var type
+     * @var object
      */
-    public $server = '';
+    public $server = null;
 
     /**
      * Current URL
      * 
-     * @var type
+     * @var string
      */
     public $host = '';
 
     /**
      * File that will be loaded to generate the cache
      * 
-     * @var type
+     * @var string
      */
     public $indexFile = '';
 
@@ -48,7 +49,8 @@ class IndexCache {
      */
     public $ignorePaths = [];
 
-    function __construct($indexFile = 'index.php', $ignorePaths = []) {
+    function __construct($indexFile = 'index.php', $ignorePaths = [])
+    {
 
         $this->path = dirname(dirname(__FILE__)); // ../src/IndexCacheTests.php
         $this->server = (object) $_SERVER;
@@ -68,16 +70,18 @@ class IndexCache {
      * 
      * @return type
      */
-    public function is_https() {
+    public function is_https()
+    {
         return isset($this->server->HTTPS);
     }
 
     /**
      * Gets the current URL
      * 
-     * @return type
+     * @return string
      */
-    public function get_url() {
+    public function get_url()
+    {
         $url = sprintf('%s%s', $this->host, $this->server->REQUEST_URI);
         return $url;
     }
@@ -86,7 +90,8 @@ class IndexCache {
      * Will attempt to cache the current URL, will also redirect if not
      * in IS_DEV mode to HTTPS
      */
-    public function try_cache() {
+    public function try_cache()
+    {
         global $skip_cache;
         $skip_cache = false;
 
@@ -102,7 +107,7 @@ class IndexCache {
             die();
         }
 
-        $url_parts = (Object) parse_url($url);
+        $url_parts = (object) parse_url($url);
 
         $path = $url_parts->path;
         if ($this->check_if_media($path)) {
@@ -118,7 +123,7 @@ class IndexCache {
             return;
         }
 
-        $filename = md5($url) . '-' . ($this->country_prop());
+        $filename = md5($url) . '-' . ($this->country_prop() . '-' . $this->get_extra_names());
         $data = $this->get($filename, 3600 * 24);
         if ($data) {
             echo $data;
@@ -141,7 +146,8 @@ class IndexCache {
      * Caches depending on NL, CH or world.
      * @return string
      */
-    public function country_prop() {
+    public function country_prop()
+    {
 
         if ($this->is_china()) {
             return USER_COUNTRY;
@@ -155,11 +161,27 @@ class IndexCache {
     }
 
     /**
+     * If the application wants to add cache names 
+     * to the title of the cached file.
+     * 
+     * @return string 
+     */
+    public function get_extra_names()
+    {
+        global $cache_names;
+        if (!$cache_names) {
+            $cache_names = [];
+        }
+        return join('-', $cache_names);
+    }
+
+    /**
      * If we are in China
      * 
      * @return type
      */
-    public function is_china() {
+    public function is_china()
+    {
         return USER_COUNTRY === 'CN';
     }
 
@@ -168,7 +190,8 @@ class IndexCache {
      * 
      * @return type
      */
-    public function is_NL() {
+    public function is_NL()
+    {
         return USER_COUNTRY === 'NL';
     }
 
@@ -176,7 +199,8 @@ class IndexCache {
      * If using Cloudflare we can grab the country and 
      * store it in a local variable
      */
-    public function set_current_country() {
+    public function set_current_country()
+    {
 
         if (defined('USER_COUNTRY')) {
             return USER_COUNTRY;
@@ -194,9 +218,10 @@ class IndexCache {
     /**
      * cache will be saved in ROOT/cache/
      * 
-     * @return type
+     * @return string
      */
-    public function get_cache_root() {
+    public function get_cache_root()
+    {
         $folder = sprintf('%s/%s/', $this->path, 'cache');
         if (!is_dir($folder)) {
             @mkdir($folder);
@@ -207,19 +232,21 @@ class IndexCache {
     /**
      * Compresses HTML
      * 
-     * @param type $html
+     * @param string $html
      * @return type
      */
-    function compress($html) {
+    function compress($html)
+    {
         return preg_replace('/\s\s+/', ' ', $html);
     }
 
     /**
      * 
-     * @param type $data
-     * @param type $file
+     * @param string $data
+     * @param string $file
      */
-    private function write($data, $file) {
+    private function write($data, $file)
+    {
 
         $ok = file_put_contents($file, $data);
         if ($ok) {
@@ -236,7 +263,8 @@ class IndexCache {
      * @param type $content
      * @return type
      */
-    public function set($name, $content) {
+    public function set($name, $content)
+    {
         $file = $this->get_cache_root() . $name;
         $base = dirname($file);
         if (!is_dir($base)) {
@@ -256,7 +284,8 @@ class IndexCache {
      * @param type $name
      * @return type
      */
-    public function append($name, $line) {
+    public function append($name, $line)
+    {
         $file = $this->get_cache_root() . $name;
         $base = dirname($file);
         if (!is_dir($base)) {
@@ -275,7 +304,8 @@ class IndexCache {
      * @param type $max_life
      * @return boolean
      */
-    public function get($name, $max_life = 3600) {
+    public function get($name, $max_life = 3600)
+    {
         $file = $this->get_cache_root() . $name;
         if (is_file($file)) {
             $ctime = filectime($file);
@@ -294,9 +324,10 @@ class IndexCache {
      * @param type $expire_on_date
      * @return type
      */
-    public function set_json($name, $json, $expire_on_date = false) {
+    public function set_json($name, $json, $expire_on_date = false)
+    {
         $file = sprintf('%s%s-JSON', $this->get_cache_root(), $name);
-        $data = (Object) [];
+        $data = (object) [];
         $data->expires = !$expire_on_date ? time() + 10 : $expire_on_date;
         $data->json = $json;
         return $this->write(json_encode($data), $file);
@@ -307,7 +338,8 @@ class IndexCache {
      * @param type $name
      * @return boolean
      */
-    public function get_json($name) {
+    public function get_json($name)
+    {
         $file = sprintf('%s%s-JSON', $this->get_cache_root(), $name);
         if (is_file($file)) {
             $data = json_decode(file_get_contents($file));
@@ -320,7 +352,8 @@ class IndexCache {
         return false;
     }
 
-    public function release() {
+    public function release()
+    {
         $file = $this->get_cache_root();
         $files = scandir($file);
         foreach ($files as $name) {
@@ -330,18 +363,22 @@ class IndexCache {
         }
     }
 
-    function check_if_media($path) {
+    function check_if_media($path)
+    {
         //Omit cache for 404 images
         $type = strlen($path) - 4;
-        if (strpos($path, '.jpg') === $type ||
-                strpos($path, '.png') === $type ||
-                strpos($path, '.gif') === $type) {
+        if (
+            strpos($path, '.jpg') === $type ||
+            strpos($path, '.png') === $type ||
+            strpos($path, '.gif') === $type
+        ) {
             return true;
         }
         return false;
     }
 
-    function do_cache($path) {
+    function do_cache($path)
+    {
         global $skip_cache;
 
         if ($skip_cache) {
@@ -372,7 +409,8 @@ class IndexCache {
      *
      * @return string IP address or PWD
      */
-    public function get_user_ip() {
+    public function get_user_ip()
+    {
         $ip = false;
 
         if (!empty($this->server->HTTP_CLIENT_IP)) {
@@ -389,5 +427,4 @@ class IndexCache {
 
         return $ip;
     }
-
 }
