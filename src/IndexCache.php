@@ -101,6 +101,10 @@ class IndexCache
 
         $url = $this->get_url();
 
+        if(!defined('IS_DEV')){
+            define('IS_DEV', false);
+        }
+
         if (!IS_DEV && !$this->is_https()) {
             header("Status: 301 Moved Permanently");
             header(sprintf("Location: %s", $url));
@@ -301,7 +305,7 @@ class IndexCache
      * Gets a cache file
      * 
      * @param type $name
-     * @param type $max_life
+     * @param int $max_life
      * @return boolean
      */
     public function get($name, $max_life = 3600)
