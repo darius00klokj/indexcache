@@ -93,6 +93,7 @@ class IndexCache
     public function try_cache()
     {
         global $skip_cache;
+        $skip_cache = false;
 
         if (!is_file($this->indexFile)) {
             throw new Exception('No index file found at ' . $this->indexFile);
